@@ -19,6 +19,13 @@ router.post('/create', authenticate, quizController.createQuiz);
 router.put('/update/:quizId', authenticate, quizController.updateQuiz);
 
 /**
+ * @route GET /available
+ * @description Récupère les quizzes.
+ * @access Private (Authenticated users)
+ */
+router.get('/available', authenticate, quizController.getAvailableQuizzes);
+
+/**
  * @route GET /:quizId
  * @description Récupère un quiz spécifique par son ID.
  * @param {string} quizId - L'ID du quiz à récupérer.
@@ -73,5 +80,7 @@ router.get('/instructor/quizzes', authenticate, quizController.getInstructorQuiz
  * @access Private (Authenticated users)
  */
 router.get('/quiz/:quizId/results', authenticate, quizController.getQuizResults);
+
+
 
 module.exports = router;

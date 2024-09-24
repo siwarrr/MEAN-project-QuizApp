@@ -382,3 +382,42 @@ exports.getQuizResults = async (req, res) => {
         res.status(500).json({ message: 'Error fetching quiz results' });
     }
 };
+
+/**
+ * Récupère les quizzes disponibles pour les étudiants.
+ * @param {Object} req - L'objet de requête HTTP.
+ * @param {Object} res - L'objet de réponse HTTP.
+ * @returns {Promise<void>}
+ */
+exports.getAvailableQuizzes = async (req, res) => {
+    try {
+        console.log('Fetching available quizzes...');
+        
+        // Récupérer tous les quizzes disponibles
+        const quizzes = await Quiz.find()
+            .populate('questions', 'question')  // Peupler les questions
+            .select('name summary timing questions')
+            .exec();
+
+        console.log('Quizzes fetched:', quizzes);
+
+        // Vérifier si des quizzes existent
+        if (!quizzes || quizzes.length === 0) {
+            return res.status(404).json({ message: 'No quizzes available' });
+        }
+
+        // Formater la réponse pour n'envoyer que les informations nécessaires
+        const quizList = quizzes.map(quiz => ({
+            id: quiz._id,
+            title: quiz.name,
+            description: quiz.summary,
+            duration: quiz.timing,
+            questionsCount: quiz.questions.length // Compter les questions dynamiquement
+        }));
+
+        res.status(200).json(quizList);
+    } catch (error) {
+        console.error('Error fetching available quizzes:', error);
+        res.status(500).json({ message: 'Error fetching available quizzes' });
+    }
+};
